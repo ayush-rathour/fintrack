@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTrack | Expense Tracker</title>
+    <meta
+      name="description"
+      content="FinTrack is a free, offline-first expense tracker PWA. Record expenses, analyze spending habits, and get smart insights - no login, no server, 100% private."
+    />
+    <meta name="author" content="Ayush Rathour - AR.dev" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://ayushrathour.netlify.app" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FinTrack - Free Expense Tracker PWA" />
+    <meta
+      property="og:description"
+      content="Track your expenses offline. Smart insights, PIN lock, PDF export, and beautiful charts. No login required. 100% private."
+    />
+    <meta
+      property="og:image"
+      content="https://ayushrathour.netlify.app/FinTrack_Icon.png"
+    />
+    <meta property="og:url" content="https://ayushrathour.netlify.app" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FinTrack - Free Expense Tracker PWA" />
+    <meta name="twitter:creator" content="@ayushrathour" />
+    <link rel="icon" href="FinTrack_Icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="FinTrack_Icon.png" />
+    <meta name="theme-color" content="#1565c0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="FinTrack" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"
+      defer
+    ></script>
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+
+  <body>
+    <!-- ================= PIN Overlay ================= -->
+    <div
+      id="pin-overlay"
+      class="pin-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-label="PIN security lock"
+    >
+      <div class="pin-box">
+        <div class="pin-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <h2 id="pin-title">Secure Access</h2>
+        <p id="pin-subtitle" class="pin-sub">Enter your PIN to continue</p>
+        <div id="pin-dots" class="pin-dots" role="status">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="pin-keypad" role="group" aria-label="PIN keypad">
+          <button class="pin-key" data-key="1">1</button>
+          <button class="pin-key" data-key="2">2</button>
+          <button class="pin-key" data-key="3">3</button>
+          <button class="pin-key" data-key="4">4</button>
+          <button class="pin-key" data-key="5">5</button>
+          <button class="pin-key" data-key="6">6</button>
+          <button class="pin-key" data-key="7">7</button>
+          <button class="pin-key" data-key="8">8</button>
+          <button class="pin-key" data-key="9">9</button>
+          <button
+            class="pin-key pin-action"
+            data-action="clear"
+            aria-label="Delete"
+          >
+            <i class="fa-solid fa-delete-left"></i>
+          </button>
+          <button class="pin-key" data-key="0">0</button>
+          <button
+            class="pin-key pin-action"
+            data-action="submit"
+            aria-label="Submit"
+          >
+            <i class="fa-solid fa-circle-check"></i>
+          </button>
+        </div>
+        <p
+          id="pin-msg"
+          class="pin-error"
+          style="display: none"
+          role="alert"
+        ></p>
+        <p
+          id="pin-retry-msg"
+          class="pin-retry"
+          style="display: none"
+          role="status"
+        ></p>
+      </div>
+    </div>
+
+    <!-- ================= App Shell ================= -->
+    <div class="app-shell">
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-brand">
+          <div class="header-logo"><i class="fa-solid fa-wallet"></i></div>
+          <div class="header-text">
+            <span class="header-title">FinTrack</span>
+            <span class="header-tagline">Expense Tracker</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="header-chip">
+            <span class="chip-label">This Month</span>
+            <span class="chip-amount"
+              >₹<span id="header-month-total">0</span></span
+            >
+          </div>
+        </div>
+      </header>
+
+      <!-- Budget Bar (shown when budget is set) -->
+      <div id="budget-bar-wrap" class="budget-bar-wrap" style="display: none">
+        <div class="budget-track">
+          <div id="budget-bar-fill" class="budget-fill"></div>
+        </div>
+        <span id="budget-bar-label" class="budget-label"></span>
+      </div>
+
+      <!-- Tab Navigation -->
+      <nav class="tab-nav" role="tablist">
+        <button
+          class="tab-btn active"
+          data-tab="home"
+          role="tab"
+          aria-selected="true"
+        >
+          <div class="tab-btn-icon-wrap"><i class="fa-solid fa-house"></i></div>
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="insights"
+          role="tab"
+          aria-selected="false"
+        >
+          <div class="tab-btn-icon-wrap">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="charts"
+          role="tab"
+          aria-selected="false"
+        >
+          <div class="tab-btn-icon-wrap">
+            <i class="fa-solid fa-chart-area"></i>
+          </div>
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="settings"
+          role="tab"
+          aria-selected="false"
+        >
+          <div class="tab-btn-icon-wrap"><i class="fa-solid fa-gear"></i></div>
+        </button>
+      </nav>
+
+      <!-- ======= TAB PANELS WRAPPER ======= -->
+      <div class="tab-panels-wrapper">
+        <!-- ======= TAB: HOME ======= -->
+        <div
+          id="tab-home"
+          class="tab-panel active"
+          role="tabpanel"
+          data-tab-index="0"
+        >
+          <!-- Stats Strip -->
+          <div class="stats-strip">
+            <div class="stat-card stat-total">
+              <div class="stat-top">
+                <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+                <span class="stat-label">Total Spent</span>
+              </div>
+              <div class="stat-value">₹<span id="stat-total">0.00</span></div>
+              <div class="stat-sub" id="stat-total-count">0 Expenses</div>
+            </div>
+            <div class="stat-card stat-today">
+              <div class="stat-top">
+                <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+                <span class="stat-label">Today</span>
+              </div>
+              <div class="stat-value">₹<span id="stat-today">0.00</span></div>
+              <div class="stat-sub" id="stat-today-count">0 Transactions</div>
+            </div>
+            <div class="stat-card stat-avg">
+              <div class="stat-top">
+                <div class="stat-icon">
+                  <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <span class="stat-label">Daily Avg</span>
+              </div>
+              <div class="stat-value">₹<span id="stat-avg">0.00</span></div>
+              <div class="stat-sub" id="stat-avg-days">Across 0 days</div>
+            </div>
+          </div>
+
+          <!-- Add Expense Form -->
+          <section class="form-card">
+            <div class="form-card-header">
+              <div class="form-card-header-left">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Record Expense</span>
+              </div>
+            </div>
+            <form id="expense-form" novalidate>
+              <div class="form-grid">
+                <div class="field-group field-group-desc">
+                  <label class="field-label" for="exp-desc"
+                    >Description
+                    <span id="desc-counter" class="desc-counter"></span
+                  ></label>
+                  <input
+                    class="field-input"
+                    type="text"
+                    id="exp-desc"
+                    placeholder="e.g. Lunch, Groceries, Cab..."
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+                <div class="field-group field-group-amount">
+                  <label class="field-label" for="exp-amount">Amount</label>
+                  <input
+                    class="field-input"
+                    type="number"
+                    id="exp-amount"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+                <div class="field-group field-group-date">
+                  <label class="field-label" for="exp-date">Date</label>
+                  <input
+                    class="field-input"
+                    type="date"
+                    id="exp-date"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Category Picker -->
+              <div class="cat-section">
+                <div class="cat-section-label">Category</div>
+                <div class="cat-grid" id="cat-grid">
+                  <button
+                    type="button"
+                    class="cat-btn active"
+                    data-cat="food"
+                    title="Food &amp; Dining"
+                  >
+                    <span class="cat-btn-icon cat-food"
+                      ><i class="fa-solid fa-mug-hot"></i
+                    ></span>
+                    <span class="cat-btn-label">Food</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="transport"
+                    title="Transport"
+                  >
+                    <span class="cat-btn-icon cat-transport"
+                      ><i class="fa-solid fa-car"></i
+                    ></span>
+                    <span class="cat-btn-label">Transport</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="shopping"
+                    title="Shopping"
+                  >
+                    <span class="cat-btn-icon cat-shopping"
+                      ><i class="fa-solid fa-bag-shopping"></i
+                    ></span>
+                    <span class="cat-btn-label">Shopping</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="health"
+                    title="Health"
+                  >
+                    <span class="cat-btn-icon cat-health"
+                      ><i class="fa-solid fa-heart-pulse"></i
+                    ></span>
+                    <span class="cat-btn-label">Health</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="entertainment"
+                    title="Entertainment"
+                  >
+                    <span class="cat-btn-icon cat-entertainment"
+                      ><i class="fa-solid fa-gamepad"></i
+                    ></span>
+                    <span class="cat-btn-label">Fun</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="bills"
+                    title="Bills &amp; Utilities"
+                  >
+                    <span class="cat-btn-icon cat-bills"
+                      ><i class="fa-solid fa-receipt"></i
+                    ></span>
+                    <span class="cat-btn-label">Bills</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="education"
+                    title="Education"
+                  >
+                    <span class="cat-btn-icon cat-education"
+                      ><i class="fa-solid fa-book"></i
+                    ></span>
+                    <span class="cat-btn-label">Education</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="travel"
+                    title="Travel"
+                  >
+                    <span class="cat-btn-icon cat-travel"
+                      ><i class="fa-solid fa-plane"></i
+                    ></span>
+                    <span class="cat-btn-label">Travel</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cat-btn"
+                    data-cat="other"
+                    title="Other"
+                  >
+                    <span class="cat-btn-icon cat-other"
+                      ><i class="fa-solid fa-border-all"></i
+                    ></span>
+                    <span class="cat-btn-label">Other</span>
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-record">
+                <i class="fa-solid fa-plus"></i> Record Expense
+              </button>
+            </form>
+          </section>
+
+          <!-- Transaction History -->
+          <section class="history-section">
+            <div class="history-header-row">
+              <h3 class="history-title">Recent Expenses</h3>
+              <div class="search-field">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="search"
+                  id="search-input"
+                  placeholder="Search..."
+                  aria-label="Search expenses"
+                />
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <div
+              class="filter-bar"
+              role="group"
+              aria-label="Filter and sort expenses"
+            >
+              <!-- Sort: Date -->
+              <button
+                class="sort-btn active"
+                data-sort="date-desc"
+                title="Sort by Date"
+              >
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Date</span>
+                <i class="fa-solid fa-arrow-down-short-wide sort-icon"></i>
+              </button>
+              <!-- Sort: Amount -->
+              <button
+                class="sort-btn"
+                data-sort="amount-desc"
+                title="Sort by Amount"
+              >
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+                <span>Amount</span>
+                <i class="fa-solid fa-arrow-down-wide-short sort-icon"></i>
+              </button>
+              <!-- Category dropdown -->
+              <div class="cat-filter-wrap">
+                <button
+                  class="sort-btn cat-filter-btn"
+                  id="cat-filter-btn"
+                  title="Filter by Category"
+                >
+                  <i class="fa-solid fa-tag"></i>
+                  <span id="cat-filter-label">Category</span>
+                  <i
+                    class="fa-solid fa-chevron-down sort-icon"
+                    id="cat-chevron"
+                  ></i>
+                </button>
+                <div
+                  class="cat-dropdown"
+                  id="cat-dropdown"
+                  style="display: none"
+                >
+                  <button class="cat-drop-item active" data-filter="all">
+                    <i class="fa-solid fa-border-all"></i> All
+                  </button>
+                  <button class="cat-drop-item" data-filter="food">
+                    <i class="fa-solid fa-mug-hot"></i> Food
+                  </button>
+                  <button class="cat-drop-item" data-filter="transport">
+                    <i class="fa-solid fa-car"></i> Transport
+                  </button>
+                  <button class="cat-drop-item" data-filter="shopping">
+                    <i class="fa-solid fa-bag-shopping"></i> Shopping
+                  </button>
+                  <button class="cat-drop-item" data-filter="health">
+                    <i class="fa-solid fa-heart-pulse"></i> Health
+                  </button>
+                  <button class="cat-drop-item" data-filter="entertainment">
+                    <i class="fa-solid fa-gamepad"></i> Fun
+                  </button>
+                  <button class="cat-drop-item" data-filter="bills">
+                    <i class="fa-solid fa-receipt"></i> Bills
+                  </button>
+                  <button class="cat-drop-item" data-filter="education">
+                    <i class="fa-solid fa-book"></i> Education
+                  </button>
+                  <button class="cat-drop-item" data-filter="travel">
+                    <i class="fa-solid fa-plane"></i> Travel
+                  </button>
+                  <button class="cat-drop-item" data-filter="other">
+                    <i class="fa-solid fa-border-all"></i> Other
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <ul id="expense-list" class="expense-list" role="list"></ul>
+            <div id="empty-state" class="empty-state" style="display: none">
+              <div class="empty-icon-wrap">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <p>No expenses yet</p>
+              <small>Start recording your first expense above</small>
+            </div>
+          </section>
+        </div>
+
+        <!-- ======= TAB: INSIGHTS ======= -->
+        <div
+          id="tab-insights"
+          class="tab-panel"
+          role="tabpanel"
+          data-tab-index="1"
+          style="display: none"
+        >
+          <div class="tab-inner">
+            <div class="tab-page-header">
+              <h2>Smart Insights</h2>
+              <p>Personalized analysis of your spending behaviour</p>
+            </div>
+            <div id="insights-container" class="insights-grid"></div>
+          </div>
+        </div>
+
+        <!-- ======= TAB: CHARTS ======= -->
+        <div
+          id="tab-charts"
+          class="tab-panel"
+          role="tabpanel"
+          data-tab-index="2"
+          style="display: none"
+        >
+          <div class="tab-inner">
+            <div class="tab-page-header">
+              <h2>Spending Charts</h2>
+              <p>Visual breakdown of where your money goes</p>
+            </div>
+
+            <div class="period-switcher">
+              <button class="period-btn active" data-period="7">7 Days</button>
+              <button class="period-btn" data-period="30">30 Days</button>
+              <button class="period-btn" data-period="90">3 Months</button>
+              <button class="period-btn" data-period="0">All Time</button>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-head">
+                <div class="chart-card-title">
+                  <div
+                    class="chart-title-dot"
+                    style="background: #1565c0"
+                  ></div>
+                  <span>Daily Spending Trend</span>
+                </div>
+                <button
+                  class="icon-btn"
+                  id="export-trend-chart"
+                  title="Export chart"
+                >
+                  <i class="fa-solid fa-download"></i>
+                </button>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="trendChart"></canvas>
+                <div
+                  class="chart-empty"
+                  id="trendChart-empty"
+                  style="display: none"
+                >
+                  <i class="fa-solid fa-chart-line"></i>
+                  <p>No spending data for this period</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-head">
+                <div class="chart-card-title">
+                  <div
+                    class="chart-title-dot"
+                    style="background: #8e24aa"
+                  ></div>
+                  <span>Category Breakdown</span>
+                </div>
+                <button
+                  class="icon-btn"
+                  id="export-donut-chart"
+                  title="Export chart"
+                >
+                  <i class="fa-solid fa-download"></i>
+                </button>
+              </div>
+              <div class="chart-wrap chart-wrap-donut">
+                <canvas id="categoryChart"></canvas>
+                <div
+                  class="chart-empty"
+                  id="categoryChart-empty"
+                  style="display: none"
+                >
+                  <i class="fa-solid fa-chart-pie"></i>
+                  <p>No spending data for this period</p>
+                </div>
+              </div>
+              <div id="category-legend" class="cat-legend"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-head">
+                <div class="chart-card-title">
+                  <div
+                    class="chart-title-dot"
+                    style="background: #00897b"
+                  ></div>
+                  <span>Weekly Comparison</span>
+                </div>
+                <button
+                  class="icon-btn"
+                  id="export-weekly-chart"
+                  title="Export chart"
+                >
+                  <i class="fa-solid fa-download"></i>
+                </button>
+              </div>
+              <div class="weekly-summary" id="weekly-summary"></div>
+              <div class="chart-wrap">
+                <canvas id="weeklyChart"></canvas>
+                <div
+                  class="chart-empty"
+                  id="weeklyChart-empty"
+                  style="display: none"
+                >
+                  <i class="fa-solid fa-chart-column"></i>
+                  <p>No expenses in the last 8 weeks</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======= TAB: SETTINGS ======= -->
+        <div
+          id="tab-settings"
+          class="tab-panel"
+          role="tabpanel"
+          data-tab-index="3"
+          style="display: none"
+        >
+          <div class="tab-inner">
+            <div class="tab-page-header">
+              <h2>Settings</h2>
+              <p>General, Data management, Security &amp; App info</p>
+            </div>
+
+            <!-- General -->
+            <div class="settings-group">
+              <div class="settings-label">General</div>
+              <div class="settings-list">
+                <!-- Theme Mode -->
+                <div class="s-row s-row-toggle">
+                  <div class="s-content">
+                    <span class="s-title">Theme Mode</span>
+                    <span class="s-sub">Light / Dark Mode Toggle</span>
+                  </div>
+                  <div
+                    class="theme-toggle"
+                    id="theme-toggle"
+                    role="group"
+                    aria-label="Theme mode"
+                  >
+                    <button
+                      class="theme-btn"
+                      data-mode="light"
+                      aria-label="Light mode"
+                    >
+                      <i class="fa-solid fa-sun"></i>
+                    </button>
+                    <button
+                      class="theme-btn"
+                      data-mode="dark"
+                      aria-label="Dark mode"
+                    >
+                      <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <div class="theme-slider"></div>
+                  </div>
+                </div>
+
+                <!-- Monthly Budget -->
+                <div class="s-row s-row-budget">
+                  <div class="s-icon" style="--ic: #00897b; --ib: #e0f2f1">
+                    <i class="fa-solid fa-bullseye"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Monthly Budget</span>
+                    <span class="s-sub">Set a limit for this month</span>
+                  </div>
+                  <div class="budget-input-wrap">
+                    <span class="budget-rupee">₹</span>
+                    <input
+                      type="number"
+                      id="budget-input"
+                      class="budget-field"
+                      placeholder="0"
+                      min="0"
+                      step="100"
+                      aria-label="Monthly budget amount"
+                    />
+                  </div>
+                </div>
+
+                <!-- Inactivity Timer -->
+                <div class="s-row s-row-timer">
+                  <div class="s-row-timer-top">
+                    <div class="s-content">
+                      <span class="s-title">Auto-Lock Timer</span>
+                      <span class="s-sub"
+                        >Lock app after inactivity (requires PIN)</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="timer-segments"
+                    id="timer-segments"
+                    role="group"
+                    aria-label="Inactivity timer"
+                  >
+                    <button class="timer-seg" data-ms="15000">15s</button>
+                    <button class="timer-seg active" data-ms="30000">
+                      30s
+                    </button>
+                    <button class="timer-seg" data-ms="60000">1m</button>
+                    <button class="timer-seg" data-ms="120000">2m</button>
+                    <button class="timer-seg" data-ms="0">Off</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="settings-group">
+              <div class="settings-label">Data Management</div>
+              <div class="settings-list">
+                <button class="s-row" id="export-pdf">
+                  <div class="s-icon" style="--ic: #1565c0; --ib: #e3f0fb">
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Export PDF</span
+                    ><span class="s-sub">Download full expense report</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+                <button class="s-row" id="export-json">
+                  <div class="s-icon" style="--ic: #2e7d32; --ib: #e8f5e9">
+                    <i class="fa-solid fa-file-code"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Export JSON</span
+                    ><span class="s-sub">Backup your data as JSON</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+                <button class="s-row" id="import-data">
+                  <div class="s-icon" style="--ic: #e65100; --ib: #fff3e0">
+                    <i class="fa-solid fa-upload"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Import Data</span
+                    ><span class="s-sub">Import from CSV or JSON file</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+                <button class="s-row" id="share-summary">
+                  <div class="s-icon" style="--ic: #0288d1; --ib: #e1f5fe">
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Share Monthly Summary</span
+                    ><span class="s-sub"
+                      >Copy or share a summary of this month</span
+                    >
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Storage Summary -->
+            <div class="settings-group">
+              <div class="settings-label">Storage Summary</div>
+              <div class="usage-card">
+                <div class="usage-row">
+                  <span class="u-label">Total Expenses</span
+                  ><span class="u-value" id="usage-count">0</span>
+                </div>
+                <div class="usage-row">
+                  <span class="u-label">Data Size</span
+                  ><span class="u-value" id="usage-size">0 KB</span>
+                </div>
+                <div class="usage-row">
+                  <span class="u-label">LocalStorage Used</span
+                  ><span class="u-value" id="usage-ls">0 KB</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security -->
+            <div class="settings-group">
+              <div class="settings-label">Security</div>
+              <div class="settings-list">
+                <button class="s-row" id="set-pin">
+                  <div class="s-icon" style="--ic: #6a1b9a; --ib: #f3e5f5">
+                    <i class="fa-solid fa-key"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Set / Change PIN</span
+                    ><span class="s-sub">Protect app with a 4-digit PIN</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+                <button class="s-row" id="remove-pin">
+                  <div class="s-icon" style="--ic: #c62828; --ib: #fce4ec">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Remove PIN</span
+                    ><span class="s-sub">Disable PIN lock entirely</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+                <button class="s-row s-row-danger" id="clear-data">
+                  <div class="s-icon" style="--ic: #b71c1c; --ib: #ffebee">
+                    <i class="fa-solid fa-trash"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Clear All Data</span
+                    ><span class="s-sub">Permanently delete all expenses</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div class="settings-group">
+              <div class="settings-label">About</div>
+              <div class="about-card">
+                <div class="about-hero">
+                  <div class="about-logo-circle">
+                    <i class="fa-solid fa-wallet"></i>
+                  </div>
+                  <div class="about-hero-text">
+                    <div class="about-name">FinTrack</div>
+                    <div class="about-ver">
+                      Version 17.3 &nbsp;|&nbsp; Expense Tracker
+                    </div>
+                  </div>
+                </div>
+                <div class="about-body">
+                  <p class="about-desc">
+                    FinTrack is a smart, privacy-first expense tracker that
+                    lives entirely on your device. No accounts, no cloud sync,
+                    no ads - just a clean, fast tool to stay on top of your
+                    spending, every single day.
+                  </p>
+
+                  <div class="about-features">
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #e3f0fb; color: #1565c0"
+                      >
+                        <i class="fa-solid fa-chart-area"></i>
+                      </div>
+                      <span class="about-feat-text">Charts &amp; Trends</span>
+                    </div>
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #e8f5e9; color: #2e7d32"
+                      >
+                        <i class="fa-solid fa-lightbulb"></i>
+                      </div>
+                      <span class="about-feat-text">Smart Insights</span>
+                    </div>
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #f3e5f5; color: #6a1b9a"
+                      >
+                        <i class="fa-solid fa-shield-halved"></i>
+                      </div>
+                      <span class="about-feat-text"
+                        >PIN Lock &amp; Security</span
+                      >
+                    </div>
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #fff3e0; color: #e65100"
+                      >
+                        <i class="fa-solid fa-file-pdf"></i>
+                      </div>
+                      <span class="about-feat-text">PDF &amp; JSON Export</span>
+                    </div>
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #e0f2f1; color: #00695c"
+                      >
+                        <i class="fa-solid fa-wifi"></i>
+                      </div>
+                      <span class="about-feat-text">Works Offline (PWA)</span>
+                    </div>
+                    <div class="about-feat">
+                      <div
+                        class="about-feat-icon"
+                        style="background: #fce4ec; color: #c62828"
+                      >
+                        <i class="fa-solid fa-lock"></i>
+                      </div>
+                      <span class="about-feat-text">100% Private</span>
+                    </div>
+                  </div>
+
+                  <div class="about-divider"></div>
+
+                  <div class="about-meta">
+                    <div class="about-meta-row">
+                      <span class="about-meta-label">Version</span>
+                      <span class="about-meta-value">17.3</span>
+                    </div>
+                    <div class="about-meta-row">
+                      <span class="about-meta-label">Build type</span>
+                      <span class="about-meta-value">Progressive Web App</span>
+                    </div>
+                    <div class="about-meta-row">
+                      <span class="about-meta-label">Data storage</span>
+                      <span class="about-meta-value"
+                        >Device only (LocalStorage)</span
+                      >
+                    </div>
+                    <div class="about-meta-row">
+                      <span class="about-meta-label">License</span>
+                      <span class="about-meta-value">MIT · Free to use</span>
+                    </div>
+                    <div class="about-meta-row">
+                      <span class="about-meta-label">Developer</span>
+                      <span class="about-meta-value"
+                        >Ayush Rathour · AR.dev</span
+                      >
+                    </div>
+                  </div>
+
+                  <a
+                    href="https://ayushrathour.netlify.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link"
+                  >
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit
+                    AR.dev Portfolio
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.tab-panels-wrapper -->
+    </div>
+    <!-- /.app-shell -->
+
+    <!-- Import Modal -->
+    <div
+      id="import-modal"
+      class="modal-backdrop"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-box">
+        <div class="modal-icon-wrap"><i class="fa-solid fa-upload"></i></div>
+        <h3>Import Preview</h3>
+        <p id="import-summary">0 transactions detected.</p>
+        <div class="modal-btns">
+          <button class="mbtn mbtn-outline" id="merge-data">Merge</button>
+          <button class="mbtn mbtn-primary" id="replace-data">
+            Replace All
+          </button>
+          <button class="mbtn mbtn-ghost" id="cancel-import">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div
+      id="confirm-modal"
+      class="modal-backdrop"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-box">
+        <div class="modal-icon-wrap modal-icon-danger">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="confirm-title">Confirm</h3>
+        <p id="confirm-msg">Are you sure?</p>
+        <div class="modal-btns">
+          <button class="mbtn mbtn-outline" id="confirm-cancel-btn">
+            Cancel
+          </button>
+          <button class="mbtn mbtn-danger" id="confirm-ok-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input
+      type="file"
+      id="import-file"
+      accept=".csv,.json"
+      style="display: none"
+      aria-hidden="true"
+    />
+
+    <!-- Toast container -->
+    <div id="toast-container" role="region" aria-live="polite"></div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("service-worker.js")
+            .then((r) => console.log("SW registered", r))
+            .catch((e) => console.error("SW failed", e));
+        });
+      }
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>

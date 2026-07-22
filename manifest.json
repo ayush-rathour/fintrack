@@ -1,0 +1,59 @@
+{
+  "name": "FinTrack - Expense Tracker",
+  "short_name": "FinTrack",
+  "description": "Free offline-first expense tracker. Record and analyze daily spending with smart insights, charts, PIN lock, and PDF export. No login required.",
+  "start_url": "/index.html?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f4fa",
+  "theme_color": "#1565c0",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["finance", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/FinTrack_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "FinTrack Home Screen"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/FinTrack_Icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FinTrack_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FinTrack_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Expense",
+      "short_name": "Add",
+      "description": "Quickly record an expense",
+      "url": "/index.html?action=add-expense",
+      "icons": [{ "src": "/FinTrack_Icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "View Insights",
+      "short_name": "Insights",
+      "description": "See your spending insights",
+      "url": "/index.html?action=insights",
+      "icons": [{ "src": "/FinTrack_Icon.png", "sizes": "96x96" }]
+    }
+  ]
+}

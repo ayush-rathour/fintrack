@@ -1,0 +1,77 @@
+MIT License
+
+Copyright (c) 2026 Ayush Rathour
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+─────────────────────────────────────────────────────────────────────────────
+ADDITIONAL NOTICE – PROJECT BRANDING
+─────────────────────────────────────────────────────────────────────────────
+
+The MIT License above applies solely to the source code of this project,
+including its HTML, CSS, JavaScript, Service Worker, Web App Manifest,
+and overall software implementation.
+
+It does NOT extend to the following, which remain the intellectual property
+of Ayush Rathour and are NOT licensed for reuse under the MIT License:
+
+  - The name "FinTrack" and its associated branding
+  - Project logo, icons, splash screens, and visual identity
+  - Original documentation and written project descriptions
+  - Application screenshots, promotional graphics, and media assets
+  - Any custom artwork or design elements created specifically for FinTrack
+
+If you use this project as the basis for your own application, you are
+encouraged to replace the project name, branding, icons, screenshots,
+documentation, and other identifying assets with your own.
+
+
+─────────────────────────────────────────────────────────────────────────────
+THIRD-PARTY COMPONENTS
+─────────────────────────────────────────────────────────────────────────────
+
+This project incorporates third-party libraries and resources. Each remains
+subject to its own respective license and is not relicensed under the MIT
+License granted above.
+
+  1. Chart.js
+     Source: https://www.chartjs.org/
+     License: MIT License
+
+  2. jsPDF
+     Source: https://github.com/parallax/jsPDF
+     License: MIT License
+
+  3. jsPDF AutoTable
+     Source: https://github.com/simonbengtsson/jsPDF-AutoTable
+     License: MIT License
+
+  4. Bootstrap Icons
+     Source: https://icons.getbootstrap.com/
+     License: MIT License
+
+  5. Font Awesome Free
+     Source: https://fontawesome.com/
+     License: Font Awesome Free License
+              (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT)
+
+Users of this project are responsible for reviewing and complying with the
+license terms of all third-party components included or referenced by the
+application.
