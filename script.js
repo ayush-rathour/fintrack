@@ -1,5 +1,5 @@
 // =====================================================
-// FinTrack v17.3 - script.js
+// FinTrack v17.6 - script.js
 // =====================================================
 
 // =====================================================
@@ -25,38 +25,35 @@ let chartTrend = null,
 // =====================================================
 
 const CAT = {
-  food: { icon: "fa-solid fa-mug-hot", label: "Food & Dining" },
-  transport: { icon: "fa-solid fa-car", label: "Transport" },
+  food: { icon: "fa-solid fa-carrot", label: "Food & Dining" },
+  travel: { icon: "fa-solid fa-car", label: "Travel" },
   shopping: { icon: "fa-solid fa-bag-shopping", label: "Shopping" },
   health: { icon: "fa-solid fa-heart-pulse", label: "Health" },
   entertainment: { icon: "fa-solid fa-gamepad", label: "Entertainment" },
   bills: { icon: "fa-solid fa-receipt", label: "Bills" },
   education: { icon: "fa-solid fa-book", label: "Education" },
-  travel: { icon: "fa-solid fa-plane", label: "Travel" },
   other: { icon: "fa-solid fa-border-all", label: "Other" },
 };
 
 const CAT_COLORS = {
   food: "#ff8f00",
-  transport: "#1976d2",
+  travel: "#1976d2",
   shopping: "#8e24aa",
   health: "#2e7d32",
   entertainment: "#c62828",
   bills: "#00695c",
   education: "#283593",
-  travel: "#0277bd",
   other: "#616161",
 };
 
 const CAT_COLORS_DARK = {
   food: "#ffb74d",
-  transport: "#64b5f6",
+  travel: "#64b5f6",
   shopping: "#ce93d8",
   health: "#81c784",
   entertainment: "#ef9a9a",
   bills: "#4db6ac",
   education: "#9fa8da",
-  travel: "#4fc3f7",
   other: "#bdbdbd",
 };
 
@@ -953,13 +950,12 @@ function shareMonthlySummary() {
   const medals = ["🥇", "🥈", "🥉"];
   const catEmoji = {
     food: "🍽",
-    transport: "🚗",
+    travel: "🚗",
     shopping: "🛍",
     health: "💊",
     entertainment: "🎮",
     bills: "🧾",
     education: "📚",
-    travel: "✈️",
     other: "📦",
   };
   const catLines = topCats

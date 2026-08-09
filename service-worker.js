@@ -1,4 +1,4 @@
-const CACHE_NAME = "fintrack-expense-v17.3";
+const CACHE_NAME = "fintrack-expense-v17.6";
 
 const APP_SHELL = [
   "/",
@@ -23,9 +23,9 @@ self.addEventListener("activate", (e) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-        )
-      )
+          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)),
+        ),
+      ),
   );
   self.clients.claim();
 });
@@ -45,6 +45,6 @@ self.addEventListener("fetch", (e) => {
         })
         .catch(() => cached);
       return cached || fresh;
-    })
+    }),
   );
 });

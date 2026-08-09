@@ -1,5 +1,5 @@
 /* =====================================================
-   FinTrack v17.3 | Expense Tracker
+   FinTrack v17.6 | Expense Tracker
    ===================================================== */
 
 @import url("https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap");
@@ -1692,7 +1692,7 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #fff8e1;
   color: #e65100;
 }
-.cat-transport {
+.cat-travel {
   background: #e3f2fd;
   color: #1565c0;
 }
@@ -1716,10 +1716,6 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #e8eaf6;
   color: #283593;
 }
-.cat-travel {
-  background: #e1f5fe;
-  color: #0277bd;
-}
 .cat-other {
   background: #f5f5f5;
   color: #424242;
@@ -1729,7 +1725,7 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #2c1f00;
   color: #ffb74d;
 }
-[data-theme="dark"] .cat-transport {
+[data-theme="dark"] .cat-travel {
   background: #0d1e35;
   color: #64b5f6;
 }
@@ -1753,10 +1749,6 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #0a0d20;
   color: #9fa8da;
 }
-[data-theme="dark"] .cat-travel {
-  background: #00171f;
-  color: #4fc3f7;
-}
 [data-theme="dark"] .cat-other {
   background: #1a1a1a;
   color: #bdbdbd;
@@ -1767,7 +1759,7 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #fff3cd;
   color: #d4810a;
 }
-.badge-transport {
+.badge-travel {
   background: #cfe2ff;
   color: #0a58ca;
 }
@@ -1791,10 +1783,6 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #dde1f5;
   color: #1a237e;
 }
-.badge-travel {
-  background: #b3e5fc;
-  color: #01579b;
-}
 .badge-other {
   background: #eeeeee;
   color: #424242;
@@ -1804,7 +1792,7 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   background: #2c1a00;
   color: #ffb74d;
 }
-[data-theme="dark"] .badge-transport {
+[data-theme="dark"] .badge-travel {
   background: #0c1d30;
   color: #64b5f6;
 }
@@ -1827,10 +1815,6 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
 [data-theme="dark"] .badge-education {
   background: #080a1a;
   color: #9fa8da;
-}
-[data-theme="dark"] .badge-travel {
-  background: #001420;
-  color: #4fc3f7;
 }
 [data-theme="dark"] .badge-other {
   background: #141414;

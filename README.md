@@ -1,4 +1,4 @@
-# FinTrack v17.3 - Personal Expense Tracker (PWA)
+# FinTrack v17.6 - Personal Expense Tracker (PWA)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Built with HTML5](https://img.shields.io/badge/HTML-5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
@@ -79,13 +79,12 @@ FinTrack focuses on making everyday expense tracking simple, organised, and effi
 Expenses can be organised into predefined spending categories, including:
 
 - Food
-- Transport
+- Travel
 - Shopping
 - Entertainment
 - Bills
 - Healthcare
 - Education
-- Travel
 - Personal
 - Other
 
@@ -603,7 +602,7 @@ Older browsers that do not support Progressive Web App features or modern JavaSc
 
 | Property         | Value                  |
 | ---------------- | ---------------------- |
-| Current Version  | **v17.3**              |
+| Current Version  | **v17.6**              |
 | Release Type     | Stable                 |
 | Application Type | Progressive Web App    |
 | Platform         | Static Web Application |
