@@ -733,6 +733,18 @@
                   </div>
                   <i class="fa-solid fa-chevron-right s-arrow"></i>
                 </button>
+                <button class="s-row" id="custom-export">
+                  <div class="s-icon" style="--ic: #0288d1; --ib: #e1f5fe">
+                    <i class="fa-solid fa-filter"></i>
+                  </div>
+                  <div class="s-content">
+                    <span class="s-title">Custom Export</span>
+                    <span class="s-sub"
+                      >Export custom date range &amp; filters</span
+                    >
+                  </div>
+                  <i class="fa-solid fa-chevron-right s-arrow"></i>
+                </button>
                 <button class="s-row" id="import-data">
                   <div class="s-icon" style="--ic: #e65100; --ib: #fff3e0">
                     <i class="fa-solid fa-upload"></i>
@@ -825,7 +837,7 @@
                   <div class="about-hero-text">
                     <div class="about-name">FinTrack</div>
                     <div class="about-ver">
-                      Version 17.6 &nbsp;|&nbsp; Expense Tracker
+                      Version 17.7 &nbsp;|&nbsp; Expense Tracker
                     </div>
                   </div>
                 </div>
@@ -901,7 +913,7 @@
                   <div class="about-meta">
                     <div class="about-meta-row">
                       <span class="about-meta-label">Version</span>
-                      <span class="about-meta-value">17.6</span>
+                      <span class="about-meta-value">17.7</span>
                     </div>
                     <div class="about-meta-row">
                       <span class="about-meta-label">Build type</span>
@@ -943,6 +955,112 @@
       <!-- /.tab-panels-wrapper -->
     </div>
     <!-- /.app-shell -->
+
+    <!-- Export Modal -->
+    <div
+      id="export-modal"
+      class="modal-backdrop"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-box" style="width: 380px">
+        <div class="modal-icon-wrap">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </div>
+        <h3>Custom Export</h3>
+        <p>
+          Select a time period, date range, or category filter before exporting.
+        </p>
+
+        <div style="text-align: left; margin-bottom: 12px">
+          <label
+            class="field-label"
+            for="export-period-select"
+            style="margin-bottom: 4px; display: block"
+            >Time Period</label
+          >
+          <select class="field-input" id="export-period-select">
+            <option value="this-month" selected>This Month</option>
+            <option value="last-month">Last Month</option>
+            <option value="last-3-months">Last 3 Months</option>
+            <option value="this-year">This Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
+
+        <div
+          id="export-custom-dates-wrap"
+          style="
+            display: none;
+            margin-bottom: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          "
+        >
+          <div style="text-align: left">
+            <label
+              class="field-label"
+              for="export-start-date"
+              style="margin-bottom: 4px; display: block"
+              >Start Date</label
+            >
+            <input class="field-input" type="date" id="export-start-date" />
+          </div>
+          <div style="text-align: left">
+            <label
+              class="field-label"
+              for="export-end-date"
+              style="margin-bottom: 4px; display: block"
+              >End Date</label
+            >
+            <input class="field-input" type="date" id="export-end-date" />
+          </div>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 16px">
+          <label
+            class="field-label"
+            for="export-cat-select"
+            style="margin-bottom: 4px; display: block"
+            >Category</label
+          >
+          <select class="field-input" id="export-cat-select">
+            <option value="all" selected>All Categories</option>
+            <option value="food">Food & Dining</option>
+            <option value="travel">Travel</option>
+            <option value="shopping">Shopping</option>
+            <option value="health">Health</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="bills">Bills</option>
+            <option value="education">Education</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div
+          id="export-preview-count"
+          style="
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 18px;
+          "
+        >
+          Matching transactions: 0
+        </div>
+
+        <div class="modal-btns">
+          <button class="mbtn mbtn-primary" id="confirm-export-pdf">
+            <i class="fa-solid fa-file-pdf"></i> PDF
+          </button>
+          <button class="mbtn mbtn-outline" id="confirm-export-json">
+            <i class="fa-solid fa-file-code"></i> JSON
+          </button>
+          <button class="mbtn mbtn-ghost" id="cancel-export">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Import Modal -->
     <div

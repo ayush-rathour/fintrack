@@ -1,5 +1,5 @@
 // =====================================================
-// FinTrack v17.6 - script.js
+// FinTrack v17.7 - script.js
 // =====================================================
 
 // =====================================================
@@ -2034,7 +2034,7 @@ function updateStorageStats() {
 }
 
 // =====================================================
-// EXPORT PDF
+// ORIGINAL EXPORT PDF & JSON (All Time)
 // =====================================================
 
 document.getElementById("export-pdf").addEventListener("click", () => {
@@ -2228,10 +2228,6 @@ document.getElementById("export-pdf").addEventListener("click", () => {
   }
 });
 
-// =====================================================
-// EXPORT JSON
-// =====================================================
-
 document.getElementById("export-json").addEventListener("click", () => {
   if (!expenses.length) {
     showToast("No expenses to export.", "warning");
@@ -2247,6 +2243,320 @@ document.getElementById("export-json").addEventListener("click", () => {
   URL.revokeObjectURL(a.href);
   showToast("JSON exported!", "info");
 });
+
+// =====================================================
+// CUSTOM EXPORT MODAL & FILTERING LOGIC
+// =====================================================
+
+const exportModal = document.getElementById("export-modal");
+const exportPeriodSelect = document.getElementById("export-period-select");
+const exportCustomDatesWrap = document.getElementById(
+  "export-custom-dates-wrap",
+);
+const exportStartDate = document.getElementById("export-start-date");
+const exportEndDate = document.getElementById("export-end-date");
+const exportCatSelect = document.getElementById("export-cat-select");
+const exportPreviewCount = document.getElementById("export-preview-count");
+
+function getFilteredExportData() {
+  const period = exportPeriodSelect.value;
+  const cat = exportCatSelect.value;
+  const now = new Date();
+
+  let filtered = [...expenses];
+
+  if (period === "this-month") {
+    filtered = filtered.filter((e) => {
+      const d = new Date(e.date + "T00:00:00");
+      return (
+        d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      );
+    });
+  } else if (period === "last-month") {
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    filtered = filtered.filter((e) => {
+      const d = new Date(e.date + "T00:00:00");
+      return (
+        d.getMonth() === lastMonth.getMonth() &&
+        d.getFullYear() === lastMonth.getFullYear()
+      );
+    });
+  } else if (period === "last-3-months") {
+    const cutoff = new Date();
+    cutoff.setMonth(now.getMonth() - 3);
+    filtered = filtered.filter((e) => new Date(e.date + "T00:00:00") >= cutoff);
+  } else if (period === "this-year") {
+    filtered = filtered.filter((e) => {
+      const d = new Date(e.date + "T00:00:00");
+      return d.getFullYear() === now.getFullYear();
+    });
+  } else if (period === "custom") {
+    const start = exportStartDate.value;
+    const end = exportEndDate.value;
+    if (start) {
+      filtered = filtered.filter((e) => e.date >= start);
+    }
+    if (end) {
+      filtered = filtered.filter((e) => e.date <= end);
+    }
+  }
+
+  if (cat !== "all") {
+    filtered = filtered.filter((e) => e.cat === cat);
+  }
+
+  return filtered;
+}
+
+function updateExportPreview() {
+  const count = getFilteredExportData().length;
+  exportPreviewCount.textContent = `Matching transactions: ${count}`;
+}
+
+exportPeriodSelect.addEventListener("change", () => {
+  const isCustom = exportPeriodSelect.value === "custom";
+  exportCustomDatesWrap.style.display = isCustom ? "grid" : "none";
+  if (isCustom && !exportEndDate.value) {
+    exportEndDate.value = today();
+  }
+  updateExportPreview();
+});
+
+exportStartDate.addEventListener("input", updateExportPreview);
+exportEndDate.addEventListener("input", updateExportPreview);
+exportCatSelect.addEventListener("change", updateExportPreview);
+
+document.getElementById("custom-export").addEventListener("click", () => {
+  if (!expenses.length) {
+    showToast("No expenses to export.", "warning");
+    return;
+  }
+  exportPeriodSelect.value = "this-month";
+  exportCatSelect.value = "all";
+  exportCustomDatesWrap.style.display = "none";
+  exportStartDate.value = "";
+  exportEndDate.value = "";
+  updateExportPreview();
+  exportModal.style.display = "flex";
+});
+
+document.getElementById("cancel-export").addEventListener("click", () => {
+  exportModal.style.display = "none";
+});
+
+document.getElementById("confirm-export-pdf").addEventListener("click", () => {
+  const filteredData = getFilteredExportData();
+  if (!filteredData.length) {
+    showToast("No expenses match the selected filters.", "warning");
+    return;
+  }
+  exportModal.style.display = "none";
+  generateCustomPDFReport(filteredData);
+});
+
+document.getElementById("confirm-export-json").addEventListener("click", () => {
+  const filteredData = getFilteredExportData();
+  if (!filteredData.length) {
+    showToast("No expenses match the selected filters.", "warning");
+    return;
+  }
+  exportModal.style.display = "none";
+
+  const blob = new Blob([JSON.stringify(filteredData, null, 2)], {
+    type: "application/json",
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `FinTrack_Expenses_${exportPeriodSelect.value}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast("Filtered JSON exported!", "info");
+});
+
+function generateCustomPDFReport(dataset) {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const ml = 14,
+      mr = 14,
+      uw = pw - ml - mr;
+    const total = dataset.reduce((s, e) => s + e.amount, 0);
+    const now = new Date();
+
+    const fmtR = (n) => `Rs. ${fmt(n)}`;
+    const safeStr = (s) => s.replace(/[^\x00-\xFF]/g, "");
+
+    const BLUE = [21, 101, 192],
+      LGRAY = [245, 248, 255],
+      LINE = [220, 220, 220];
+
+    doc
+      .setFont("helvetica", "bold")
+      .setFontSize(22)
+      .setTextColor(...BLUE);
+    doc.text("FinTrack", pw / 2, 18, { align: "center" });
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(120);
+    doc.text("Custom Expense Report", pw / 2, 25, { align: "center" });
+    doc.setFontSize(9).setTextColor(140);
+    doc.text(
+      `Exported: ${now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`,
+      ml,
+      32,
+    );
+    doc.setDrawColor(...LINE);
+    doc.line(ml, 35, pw - mr, 35);
+
+    const catTotalsP = {},
+      dayTotalsP = {};
+    dataset.forEach((e) => {
+      catTotalsP[e.cat] = (catTotalsP[e.cat] || 0) + e.amount;
+      dayTotalsP[e.date] = (dayTotalsP[e.date] || 0) + e.amount;
+    });
+
+    const topCatP = Object.entries(catTotalsP).sort((a, b) => b[1] - a[1])[0];
+    const topDayP = Object.entries(dayTotalsP).sort((a, b) => b[1] - a[1])[0];
+    const topCatLbl = topCatP
+      ? `${(CAT[topCatP[0]] || CAT.other).label} (${fmtR(topCatP[1])})`
+      : "-";
+    const topDayLbl = topDayP
+      ? `${formatDate(topDayP[0])} (${fmtR(topDayP[1])})`
+      : "-";
+
+    const avgDaily = (() => {
+      if (dataset.length < 2) return total;
+      const allMs = dataset.map((e) =>
+        new Date(e.date + "T00:00:00").getTime(),
+      );
+      const span = Math.min(
+        Math.round((Math.max(...allMs) - Math.min(...allMs)) / 86400000) + 1,
+        90,
+      );
+      return total / (span || 1);
+    })();
+
+    const stats = [
+      { label: "MATCHING EXPENSES", value: String(dataset.length) },
+      { label: "TOTAL AMOUNT SPENT", value: fmtR(total) },
+      { label: "DAILY AVERAGE", value: fmtR(avgDaily) },
+      { label: "TOP CATEGORY", value: topCatLbl },
+      { label: "TOP SPEND DAY", value: topDayLbl },
+    ];
+
+    const cardGap = 5,
+      cardW = (uw - cardGap) / 2,
+      cardH = 20,
+      rowGap = 4;
+    const startY = 40;
+
+    stats.forEach((s, i) => {
+      const col = i % 2,
+        row = Math.floor(i / 2);
+      const cx = ml + col * (cardW + cardGap);
+      const cy = startY + row * (cardH + rowGap);
+
+      doc.setFillColor(255, 255, 255).setDrawColor(210, 220, 235);
+      doc.roundedRect(cx, cy, cardW, cardH, 2, 2, "FD");
+      doc.setFillColor(...BLUE).rect(cx, cy, 3, cardH, "F");
+
+      const textX = cx + 3 + 4;
+      const maxVW = cardW - 3 - 8;
+
+      doc
+        .setFont("helvetica", "normal")
+        .setFontSize(6.8)
+        .setTextColor(110, 130, 155);
+      doc.text(s.label, textX, cy + 7);
+
+      doc
+        .setFont("helvetica", "bold")
+        .setFontSize(10.5)
+        .setTextColor(15, 25, 50);
+      let vLines = doc.splitTextToSize(s.value, maxVW);
+      if (vLines.length > 2) vLines = [vLines[0], vLines[1] + "…"];
+      vLines.forEach((line, idx) =>
+        doc.text(line, textX, cy + 10 + 3 + idx * 4),
+      );
+    });
+
+    const tableStartY =
+      startY + Math.ceil(stats.length / 2) * (cardH + rowGap) + 4;
+    doc
+      .setFont("helvetica", "bold")
+      .setFontSize(9)
+      .setTextColor(...BLUE);
+    doc.text("TRANSACTION HISTORY", ml, tableStartY);
+    doc
+      .setDrawColor(...BLUE)
+      .setLineWidth(0.6)
+      .line(ml, tableStartY + 2, pw - mr, tableStartY + 2)
+      .setLineWidth(0.2);
+
+    const rows = [...dataset]
+      .sort((a, b) =>
+        a.date < b.date ? 1 : a.date > b.date ? -1 : b.id - a.id,
+      )
+      .map((e) => [
+        formatDate(e.date),
+        safeStr(e.desc),
+        (CAT[e.cat] || CAT.other).label,
+        fmtR(e.amount),
+      ]);
+
+    doc.autoTable({
+      startY: tableStartY + 6,
+      head: [["Date", "Description", "Category", "Amount (INR)"]],
+      body: rows,
+      headStyles: {
+        fillColor: BLUE,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 9,
+        halign: "center",
+        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+      },
+      bodyStyles: {
+        fontSize: 9,
+        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+      },
+      alternateRowStyles: { fillColor: LGRAY },
+      columnStyles: {
+        0: { cellWidth: 26, halign: "center" },
+        1: { cellWidth: "auto", halign: "center" },
+        2: { cellWidth: 38, halign: "center" },
+        3: { cellWidth: 38, halign: "center", fontStyle: "bold" },
+      },
+      styles: { overflow: "linebreak", lineColor: LINE, lineWidth: 0.15 },
+      margin: { left: ml, right: mr, bottom: 32 },
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(...LINE).line(ml, ph - 24, pw - mr, ph - 24);
+      doc
+        .setFontSize(9)
+        .setTextColor(130)
+        .text("FinTrack - by AR.dev", ml, ph - 14);
+      doc.text(`Page ${i} of ${pageCount}`, pw / 2, ph - 14, {
+        align: "center",
+      });
+      doc
+        .setTextColor(...BLUE)
+        .textWithLink("AR.dev", pw - mr, ph - 14, {
+          url: "https://ayushrathour.netlify.app",
+          align: "right",
+        });
+    }
+
+    doc.save("FinTrack_Expenses_Filtered.pdf");
+    showToast("Filtered PDF exported!", "info");
+  } catch (err) {
+    console.error(err);
+    showToast("PDF export failed.", "error");
+  }
+}
 
 // =====================================================
 // IMPORT DATA
