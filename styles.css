@@ -102,6 +102,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition-property: background-color, border-color, color, box-shadow;
 }
 
 html {

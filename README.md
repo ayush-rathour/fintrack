@@ -6,12 +6,14 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![Deployed on Netlify](https://img.shields.io/badge/Deployed%20on-Netlify-00C7B7?logo=netlify&logoColor=white)](https://fintrack-ar.netlify.app)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white)](https://github.com/ayush-rathour/fintrack)
 
-> **FinTrack** is a modern, offline-first personal expense tracker built with semantic HTML5, hand-written CSS3, and vanilla JavaScript. Designed as a Progressive Web App (PWA), it enables users to securely record, analyse, and visualise everyday spending while keeping all financial data stored locally on the user's device-without requiring accounts, cloud synchronisation, or an internet connection.
+> **FinTrack** is a modern, offline-first personal expense tracker built with semantic HTML5, hand-written CSS3, and vanilla JavaScript (ES6+). Packaged as an installable Progressive Web App, it lets users record, search, filter, analyse, and export everyday spending  with all data kept entirely on-device in `localStorage`. No accounts, no backend, no network calls beyond loading static assets and CDN libraries.
 
 **Live Application:** https://fintrack-ar.netlify.app
+**Installable APK:** https://ayushrathour.netlify.app/files/FinTrack_v17.apk
 
-> **Note:** FinTrack currently focuses on expense tracking only. Income tracking, budgeting, and overall balance management are planned for future releases.
+> **Note:** FinTrack currently focuses on expense tracking only. Income tracking and full balance management are not yet implemented (see Roadmap).
 
 ---
 
@@ -36,13 +38,9 @@
 
 # Overview
 
-FinTrack is a lightweight yet feature-rich personal finance application that helps users monitor and understand their spending habits without relying on external servers or third-party services. Built entirely with vanilla web technologies, the application combines modern user experience principles with strong local privacy, making it suitable for everyday financial tracking on desktop and mobile devices alike.
+FinTrack is a lightweight, framework-free finance app that helps people track and understand their spending without any server, account, or cloud dependency. Everything  the transaction ledger, the theme preference, the PIN hash, the monthly budget  lives in the browser's `localStorage` on the user's own device.
 
-Unlike traditional expense trackers that require user accounts or cloud storage, FinTrack operates completely offline after installation. All transaction data, application settings, and security preferences remain on the user's device through browser LocalStorage, ensuring complete ownership of personal financial information.
-
-The application includes interactive spending analytics, behavioural insights, PIN-protected local security, flexible data import/export tools, and Progressive Web App capabilities, allowing it to function similarly to a native mobile application while remaining entirely browser-based.
-
-The design follows a clean, fintech-inspired interface featuring a modern blue-gradient theme, glassmorphism components, smooth animations, responsive layouts, and carefully designed interactions that prioritise usability across phones, tablets, and desktop systems.
+The UI follows a fintech-inspired blue-gradient design with rounded surfaces, soft shadows, and a large library of hand-tuned CSS animations (spring easing, staggered list entrances, sliding "pill" indicators behind active tabs/segments, shimmer sweeps, number pop-ins, etc.). The app is a four-tab single-page interface  **Home**, **Insights**, **Charts**, and **Settings**  with a floating bottom tab bar and full light/dark theme support.
 
 ---
 
@@ -50,292 +48,168 @@ The design follows a clean, fintech-inspired interface featuring a modern blue-g
 
 ## User Experience & Interface
 
-- **Modern fintech-inspired interface** featuring a clean blue-gradient colour palette, glassmorphism panels, soft shadows, and carefully balanced spacing for an intuitive financial dashboard experience.
-- **Fully responsive layout** optimised for mobile phones, tablets, laptops, and desktop displays without requiring a separate mobile application.
-- **Progressive Web App (PWA)** architecture allows FinTrack to be installed directly from the browser and used like a native application.
-- **Offline-first design** ensures the application remains fully functional even without an internet connection.
-- **Animated floating labels**, interactive cards, smooth transitions, and subtle micro-interactions provide a polished user experience throughout the application.
-- **Modern toast notification system** with icons, progress indicators, and contextual success or error feedback.
-- **Glass-style modal windows** for confirmations, security prompts, import/export operations, and application settings.
-- **Collapsible settings panel** that groups privacy, data management, and security controls without cluttering the main interface.
+- **Four-tab app shell** (Home / Insights / Charts / Settings) with a floating pill-shaped bottom navigation bar, animated tab-switch transitions (slide left/right depending on direction), and a sliding highlight pill behind the active icon.
+- **Light & dark themes**, toggled from Settings via a two-way animated switch; the choice is persisted in `localStorage` and re-applied on load. Charts, category colors, and badge colors all have dedicated dark-mode palettes.
+- **Sticky header** showing the app name and a live "This Month" spend chip that flashes on update.
+- **Sticky search bar and filter bar** on the Home tab so they stay visible while scrolling a long transaction list.
+- **Animated statistics**: total spent, today's spend, and daily average count up/down smoothly whenever the underlying numbers change, with a pop animation on the value itself.
+- **Skeleton loading state** utility for the transaction list, and **scroll-reveal** animations (via `IntersectionObserver`) for list items beyond the first six.
+- **Ripple effect** on primary buttons, category chips, sort buttons, timer segments, tab buttons, PIN keys, and modal buttons.
+- **Toast notification system** (success / error / info / warning) with auto-dismiss progress bars, plus a dedicated **undo toast** used for deletions.
+- **Glass-style modal windows** for confirmations, custom export, and data import.
+- Fully **responsive layout** with dedicated breakpoints for ≤380px, ≤600px, and ≥901px (desktop gets a centered, rounded "phone-card" shell).
 
 ---
 
 ## Expense Management
 
-FinTrack focuses on making everyday expense tracking simple, organised, and efficient.
+### Recording & Editing
 
-### Transaction Management
-
-- Add expense entries with description, amount, category, and transaction date.
-- Automatic chronological sorting, ensuring the newest transactions always appear first.
-- Instant search across descriptions, amounts, dates, and transaction information.
-- Category-based filtering for quicker navigation through spending history.
-- One-click transaction deletion with a built-in **Undo** recovery window, allowing accidentally removed entries to be restored within five seconds.
-- Live transaction updates without requiring page refreshes.
+- Add an expense with **description** (up to 60 characters, with a live counter that turns amber near the limit and red/pulses at the limit), **amount**, **date**, and **category**.
+- **In-place editing**: clicking edit on a transaction loads it back into the form, highlights the form card and the row being edited, and swaps the submit button to "Update Expense."
+- **One-click delete with a 5-second Undo window** via a dedicated undo toast  deleted items can be restored before the toast expires.
+- Smooth **exit/entry animations**: new rows get a border "flash," deleted rows animate out and collapse, and the list uses keyed diffing so re-renders don't cause flicker.
 
 ### Categories
 
-Expenses can be organised into predefined spending categories, including:
+Transactions are organised into eight built-in categories, each with its own icon and color (light/dark variants):
 
-- Food
+- Food & Dining
 - Travel
 - Shopping
-- Entertainment
+- Health
+- Entertainment (labeled "Fun" in the picker)
 - Bills
-- Healthcare
 - Education
-- Personal
 - Other
 
-This categorisation enables meaningful analytics and more accurate spending insights.
+### Browsing, Search, Sort & Filter
+
+- **Instant search** (debounced) across description, amount, formatted date, and category.
+- **Sort toggle** by Date or Amount, click again to flip ascending/descending (with an animated arrow icon).
+- **Category filter dropdown** to narrow the list to a single category.
+- **Empty state** illustration when no transactions match the current filters.
 
 ---
 
-## Spending Analytics & Visualisation
+## Spending Analytics & Visualisation (Home & Charts tabs)
 
-FinTrack transforms raw transaction data into meaningful visual information through interactive dashboards and real-time calculations.
+### Live Summary Stats (Home)
 
-### Financial Summary
+- **Total Spent** and total transaction count.
+- **Today's spend** and today's transaction count.
+- **Daily Average** (based on the span of days between the first and last recorded expense, capped at 90 days) and the number of active days it covers.
+- **This Month** total shown as a pill in the sticky header.
+- **Monthly budget bar** (only shown once a budget is set in Settings): fills proportionally to spend, turns amber past 80% and red/pulsing once over budget, and shows remaining/over-budget amount.
 
-The dashboard continuously updates to display:
+### Interactive Charts (Chart.js)
 
-- Total spending
-- Today's spending
-- Daily average expenditure
-- Total recorded transactions
+All charts respect the selected time period (**7 Days / 30 Days / 3 Months / All Time**, via an animated sliding-pill switcher) and automatically re-theme when switching light/dark mode:
 
-All summary values update instantly whenever transactions are added, edited, imported, or removed.
-
-### Interactive Charts
-
-The application includes multiple Chart.js visualisations designed to help users better understand their spending behaviour.
-
-Available charts include:
-
-- Daily spending trend
-- Category distribution (Doughnut Chart)
-- Weekly spending comparison
-- Historical spending patterns
-
-Each chart supports:
-
-- Smooth animations
-- Dynamic gradient styling
-- Rich tooltips
-- Responsive resizing
-- Empty-state messaging when insufficient data exists
-- PNG image export for reports or sharing
+- **Daily Spending Trend**  a filled line chart of spend per day, with gradient fill and smart point sizing for dense data.
+- **Category Breakdown**  a doughnut chart with a generated legend beneath it.
+- **Weekly Comparison**  a bar chart of the last 8 Monday–Sunday calendar weeks, highlighting the current week and the single highest-spending week, plus a stat strip (This Week / Last Week / % Change / Records).
+- Each chart shows a friendly **empty-state overlay** (icon + message) instead of a blank canvas when there's no data for the selected period.
+- Every chart can be **exported as a PNG** via a dedicated download button on its card.
 
 ---
 
-## Smart Insights Engine
+## Smart Insights Engine (Insights tab)
 
-Beyond simple statistics, FinTrack analyses transaction history to generate intelligent behavioural insights that encourage better financial decision-making.
+Insight cards are generated dynamically from the current transaction data and rendered as **expandable accordion cards** (tap to expand a detail panel; only one stays open at a time). Cards currently generated:
 
-The insights engine automatically evaluates spending patterns and highlights useful observations such as:
+1. **This Month**  total spend, count, daily average, and a breakdown of the month's top 3 categories, with a biggest-expense callout.
+2. **Top Spending Category**  the all-time leading category with its share of total spend, a full category breakdown bar list, and the top 5 individual expenses in that category.
+3. **Weekly Trend**  compares the last 7 days to the previous 7 days (increasing / decreasing / stable), with a day-by-day bar breakdown of the current week.
+4. **Largest Expense**  the single biggest transaction on record, its % of total spend, and a top-5 "biggest expenses" list.
+5. **30-Day Daily Average**  average daily spend over the trailing 30 days, a projected monthly total, and a week-by-week (Week 1–4) breakdown.
+6. **Recurring Expense**  auto-detects any description repeated 3+ times, shows total/average/yearly-projected spend on it, its most recent occurrences, and a ranked list of all other recurring expenses.
 
-### Monthly Spending Summary
-
-Provides a concise overview of:
-
-- Total monthly expenditure
-- Number of recorded expenses
-- Average daily spending
-- Highest spending categories
-
-### Weekly Spending Trend
-
-Compares current and previous weeks to identify whether spending is:
-
-- Increasing
-- Decreasing
-- Remaining stable
-
-This enables users to recognise financial trends before they become habits.
-
-### Best Saving Day
-
-Analyses historical spending to determine which day demonstrates the healthiest spending behaviour, helping users identify routines associated with better money management.
-
-### Recurring Expenses
-
-Automatically detects repeated payments such as subscriptions, memberships, utility bills, and other recurring expenses, encouraging users to review unnecessary recurring costs.
-
-Every generated insight includes:
-
-- A meaningful icon
-- Concise statistical summary
-- Practical financial recommendation
-- Easy-to-understand language designed for everyday users
-
-Rather than overwhelming users with raw financial data, FinTrack focuses on transforming information into actionable guidance.
+Each card includes a short plain-language observation and a practical tip; cards only appear when there's enough data to support them (e.g., the recurring-expense card is skipped entirely if nothing repeats).
 
 ---
 
 ## Security & Privacy
 
-FinTrack is designed around a privacy-first philosophy. Unlike many modern finance applications, it does not rely on user accounts, cloud synchronisation, external databases, or third-party storage providers. Every transaction, preference, and security setting remains stored locally on the user's own device.
+FinTrack never leaves the device  there is no login, no cloud sync, and no analytics beacon in the shipped code.
 
-No personal financial information is transmitted to external servers, giving users complete ownership and control over their data.
+### PIN Lock
 
-### Advanced PIN Protection
+- **4-digit PIN** entered via an on-screen numeric keypad (also supports the physical keyboard: digits, Backspace/Delete, Enter).
+- PINs are never stored in plain text  each PIN is combined with a randomly generated, persisted salt and hashed with **SHA-256** (`crypto.subtle.digest`) before being saved to `localStorage`.
+- Full **Set / Change / Remove PIN** flows, each requiring the correct current PIN before a change or removal takes effect.
+- **3 wrong attempts trigger a 30-second lockout**, with a live countdown message; the lockout state is persisted so it survives a page refresh.
+- **Auto-lock on inactivity**: choose 15s / 30s / 1m / 2m / Off from a sliding segmented control in Settings. Any mouse move, key press, touch, click, or scroll resets the idle timer; once it fires (and a PIN is set), the PIN overlay reappears automatically.
+- Visual feedback on entry: dots fill as digits are typed, the PIN box shakes on a wrong entry, and flashes green on success.
 
-FinTrack includes a comprehensive local authentication system that protects sensitive financial information without requiring an internet connection.
+### Data Ownership
 
-The security layer supports multiple authentication workflows, including:
-
-- Setting a new PIN
-- PIN confirmation during setup
-- Secure application unlock
-- PIN change
-- PIN removal
-
-Additional security measures include:
-
-- **Four-digit PIN authentication** with an intuitive numeric keypad.
-- **SHA-256 hashed PIN storage**, ensuring PIN values are never stored in plain text.
-- **Automatic inactivity lock** after two minutes of user inactivity.
-- **Three-attempt protection** with a temporary 30-second lockout after consecutive failed attempts.
-- **Persistent lockout state**, preventing bypass through page refreshes or browser restarts.
-- **PIN verification** before performing sensitive actions such as clearing all stored data.
-
-This layered approach provides meaningful protection while maintaining a simple and frictionless user experience.
+- All expenses, the PIN hash + salt, the theme choice, the budget, and the auto-lock preference are stored exclusively in the browser's `localStorage`.
+- **Clear All Data** (in Settings, behind a confirmation modal) wipes `localStorage` entirely  including the PIN  and reloads the app.
 
 ---
 
 ## Data Import & Export
 
-FinTrack provides flexible data portability features, allowing users to create backups, migrate between devices, and analyse their spending outside the application.
+### Export
 
-### Export Options
+- **Export PDF**  a full, all-time report generated client-side with **jsPDF + jsPDF-AutoTable**: branded header, generation date, five summary stat cards (total expenses, total amount, 90-day daily average, highest-spend category, highest-spend day), a complete sorted transaction table, and a footer with page numbers and a linked developer credit on every page.
+- **Export JSON**  downloads the full transaction array as a formatted `.json` backup file.
+- **Custom Export**  opens a modal to choose a **time period** (This Month / Last Month / Last 3 Months / This Year / Custom Range with start & end date pickers) and/or a **category filter**, with a live "matching transactions" counter, then export the filtered result as either a similarly branded **PDF** or a **JSON** file.
+- **Export chart images**  any of the three Chart.js visualisations can be saved as a standalone PNG.
+- **Share Monthly Summary**  builds a formatted text digest for the current month (total, transaction count, daily average, trend vs. last month, budget usage if set, top 3 categories with emoji medals, and the single biggest expense) and either opens the native share sheet (`navigator.share`) or copies it to the clipboard as a fallback.
 
-Users can export their financial information in multiple formats depending on their needs.
+### Import
 
-#### PDF Reports
-
-Generate professionally formatted spending reports containing:
-
-- FinTrack branding
-- Report generation date
-- Summary statistics
-- Daily averages
-- Highest spending category
-- Highest spending day
-- Complete transaction table
-- Automatic page numbering
-- Developer attribution
-
-#### JSON Export
-
-Export structured transaction data for:
-
-- Device migration
-- Long-term backups
-- Data recovery
-- Integration with external applications
-
-#### Chart Export
-
-Every interactive chart can be exported as a high-resolution PNG image for presentations, documentation, or financial reporting.
+- Import from **CSV or JSON** via a file picker.
+- CSV parsing handles quoted fields and commas within quotes (a minimal RFC 4180-style line parser).
+- After parsing, a preview modal shows how many valid transactions were detected, then lets the user choose:
+  - **Merge**  appends new transactions while skipping exact duplicates (matched on date + description + amount), reporting how many were added vs. skipped.
+  - **Replace All**  wipes the existing ledger and replaces it with the imported data.
 
 ---
 
-### Import Options
+## Storage Usage Summary
 
-Existing transaction histories can be imported from both CSV and JSON files.
+The Settings tab's **Storage Summary** panel shows, live:
 
-During the import process, users are provided with:
-
-- File preview before importing
-- Validation of supported file formats
-- Import summary
-- Duplicate detection
-- Conflict handling options
-
-Two import modes are available:
-
-**Replace All**
-
-Completely replaces the existing transaction history with the imported dataset.
-
-**Merge**
-
-Safely appends imported transactions while automatically skipping duplicate entries based on transaction date, description, and amount.
-
-After each import, FinTrack displays a summary showing:
-
-- Imported records
-- Duplicate entries skipped
-- Final transaction count
-
----
-
-## Data Usage Summary
-
-To improve transparency, FinTrack provides live information about the application's local storage usage.
-
-The Data & Security panel displays:
-
-- Total recorded transactions
-- Storage occupied by transaction history
-- Overall browser LocalStorage usage
-
-This helps users understand how much data the application stores and monitor long-term usage without relying on hidden background processes.
+- Total number of recorded expenses.
+- The size of the stored expense data (via `Blob` size, in KB).
+- Total `localStorage` usage across all keys used by the app (in KB).
 
 ---
 
 ## Progressive Web App
 
-FinTrack is developed as a Progressive Web App (PWA), enabling it to deliver a native application experience while remaining entirely browser-based.
+FinTrack ships a `manifest.json` and a `service-worker.js`, making it installable and offline-capable:
 
-Once installed, the application launches independently from the browser and continues functioning without an active internet connection.
-
-### PWA Features
-
-- Installable on Android, iOS, Windows, macOS, and Linux.
-- Offline-first architecture powered by a Service Worker.
-- Fast startup through intelligent asset caching.
-- Full-screen application experience without browser interface elements.
-- Automatic loading of previously cached resources when offline.
-- Native home-screen integration on supported devices.
-
-### Offline Experience
-
-After the initial visit, FinTrack caches its core application files locally, allowing users to:
-
-- Record new expenses.
-- Browse historical transactions.
-- View spending analytics.
-- Generate reports.
-- Export or import data.
-- Access security settings.
-
--all without requiring an internet connection.
-
-This ensures the application remains reliable while travelling, during network interruptions, or in environments with limited connectivity.
+- **Installable** on Android, iOS, Windows, macOS, and Linux, with standalone display mode and a dedicated app icon/screenshot.
+- **App shortcuts** (long-press the icon on supported platforms) for "Add Expense" and "View Insights."
+- **Offline-first caching**: the service worker pre-caches the app shell (HTML, CSS, JS, manifest, icon) plus the Chart.js, Bootstrap Icons, and Google Fonts CDN assets on install, serves cached responses instantly, and refreshes the cache in the background on every fetch (stale-while-revalidate style). Navigation requests fall back to the cached `index.html` if the network is unavailable.
+- **Automatic cache versioning**: the service worker's cache name is tied to the app version (currently `fintrack-expense-v17.7`), and old caches are purged on activation.
 
 ---
 
 # Tech Stack
 
-| Category            | Technology                                                                            |
-| ------------------- | ------------------------------------------------------------------------------------- |
-| Markup              | HTML5 (Semantic HTML, Accessibility, ARIA Attributes)                                 |
-| Styling             | CSS3 (Custom Properties, Flexbox, CSS Grid, Glassmorphism, Animations, Media Queries) |
-| Scripting           | Vanilla JavaScript (ES6+)                                                             |
-| Data Visualisation  | Chart.js                                                                              |
-| PDF Generation      | jsPDF + AutoTable                                                                     |
-| Icons               | Bootstrap Icons, Font Awesome                                                         |
-| Offline Support     | Service Worker                                                                        |
-| Storage             | Browser LocalStorage                                                                  |
-| Progressive Web App | Web App Manifest                                                                      |
-| Hosting             | Netlify                                                                               |
-| Version Control     | Git & GitHub                                                                          |
+| Category            | Technology                                                                     |
+| ------------------- | ------------------------------------------------------------------------------ |
+| Markup              | HTML5 (Semantic HTML, ARIA attributes)                                         |
+| Styling             | CSS3 (Custom Properties, Flexbox, CSS Grid, Animations, Media Queries)         |
+| Scripting           | Vanilla JavaScript (ES6+)                                                      |
+| Data Visualisation  | Chart.js                                                                       |
+| PDF Generation      | jsPDF + jsPDF-AutoTable                                                        |
+| Icons               | Font Awesome (primary, used across the UI), Bootstrap Icons (cached by the SW) |
+| Fonts               | Google Fonts  SUSE (variable weight)                                          |
+| Offline Support     | Service Worker (cache-first with background refresh)                           |
+| Storage             | Browser `localStorage`                                                         |
+| Progressive Web App | Web App Manifest                                                               |
+| Hosting             | Netlify                                                                        |
+| Version Control     | Git & GitHub                                                                   |
 
-**Build Process:** None (No package manager, bundler, frontend framework, or build tools required.)
+**Build Process:** None (no package manager, bundler, or framework required.)
 
-**CDNs Used:** Chart.js, jsPDF, AutoTable, Bootstrap Icons, Font Awesome.
+**CDNs Used:** Chart.js, jsPDF, jsPDF-AutoTable, Font Awesome, Google Fonts (SUSE), Bootstrap Icons (cached asset).
 
 ---
 
@@ -343,34 +217,30 @@ This ensures the application remains reliable while travelling, during network i
 
 ```text
 .
-├── index.html                        # Main application interface
-├── styles.css                        # Complete application styling
-├── script.js                         # Core application logic
-├── manifest.json                     # Progressive Web App configuration
-├── service-worker.js                 # Offline caching & asset management
-├── finTrack_icon.png                 # Application icon & favicon
-├── google333456a1430d0ffc.html       # Google Analytics G-tag
+├── index.html            # Main application markup (app shell, modals, PIN overlay)
+├── styles.css            # Complete application styling & animations
+├── script.js             # Core application logic (state, rendering, charts, PDF, PIN, PWA hook-in)
+├── manifest.json         # Web App Manifest (PWA metadata, icons, shortcuts)
+├── service-worker.js     # Offline caching & asset management
+├── FinTrack_Icon.png     # Application icon / favicon / screenshot
 ├── LICENSE
 └── README.md
 ```
 
-> **Note:** All application files should remain within the project root. The relative file structure is required for the Service Worker, Web App Manifest, icons, and offline caching to function correctly.
+> **Note:** All application files should remain within the project root. The relative paths in the manifest, service worker, and `<link>`/`<script>` tags depend on this structure for correct offline caching.
 
 ---
 
 # Application Modules
 
-FinTrack is organised into multiple functional areas, each responsible for a specific aspect of expense management.
-
-| Module              | Description                                                                                  |
-| ------------------- | -------------------------------------------------------------------------------------------- |
-| **Dashboard**       | Displays financial summaries, charts, and spending statistics in real time.                  |
-| **Transactions**    | Add, search, filter, sort, and manage expense records.                                       |
-| **Insights**        | Automatically analyses spending behaviour and generates personalised financial observations. |
-| **Charts**          | Interactive visualisations powered by Chart.js with export functionality.                    |
-| **Import & Export** | Supports CSV/JSON imports, PDF reports, JSON backups, and PNG chart exports.                 |
-| **Security**        | Local PIN authentication, inactivity lock, secure data removal, and privacy controls.        |
-| **Settings**        | Data management, storage information, and application preferences.                           |
+| Module               | Description                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| **Dashboard (Home)** | Stats strip, budget bar, expense form, and searchable/sortable/filterable transaction list.      |
+| **Insights**         | Auto-generated, expandable analysis cards covering monthly, category, trend, and recurring data. |
+| **Charts**           | Chart.js visualisations (trend, category doughnut, weekly comparison) with PNG export.           |
+| **Settings**         | Theme, budget, auto-lock timer, data export/import, storage stats, PIN security, About info.     |
+| **Security**         | SHA-256-hashed PIN lock, lockout protection, and inactivity auto-lock.                           |
+| **Import & Export**  | CSV/JSON import (merge or replace), full & custom PDF/JSON export, chart PNG export, share.      |
 
 ---
 
@@ -378,11 +248,7 @@ FinTrack is organised into multiple functional areas, each responsible for a spe
 
 ## Prerequisites
 
-FinTrack is built entirely with standard web technologies and requires no build tools, package managers, or external dependencies to run locally.
-
-A modern web browser is sufficient.
-
----
+FinTrack requires no build tools, package managers, or external dependencies to run locally  just a modern web browser.
 
 ## Running Locally
 
@@ -390,28 +256,23 @@ A modern web browser is sufficient.
 
 ```bash
 git clone https://github.com/ayush-rathour/fintrack.git
-
 cd fintrack
 ```
 
----
-
 ### 2. Verify Project Files
 
-Ensure the following core files are present in the project root:
+Ensure the following are present in the project root:
 
 - `index.html`
 - `styles.css`
 - `script.js`
 - `manifest.json`
 - `service-worker.js`
-- `finTrack_icon.png`
-
----
+- `FinTrack_Icon.png`
 
 ### 3. Start a Local Server (Recommended)
 
-Although `index.html` can be opened directly, serving the project through a lightweight local server is recommended to ensure correct behaviour of the Service Worker and Progressive Web App features.
+Serving through a lightweight local server ensures the Service Worker and PWA install prompt behave correctly (opening `index.html` directly via `file://` will work for the UI but skips service worker registration).
 
 Using Python:
 
@@ -425,176 +286,95 @@ Using Node.js:
 npx http-server .
 ```
 
----
-
 ### 4. Open the Application
 
-Visit
-
-```
-http://localhost:8000
-```
-
-in your browser.
-
-The application will automatically register its Service Worker and become installable on supported browsers.
+Visit `http://localhost:8000` in your browser. The service worker registers automatically on load, and the app becomes installable on supported browsers.
 
 ---
 
 # Configuration Guide
 
-FinTrack has been designed with simplicity in mind. Most customisation can be completed by editing a small number of files.
-
-| What to Change       | Where                                  |
-| -------------------- | -------------------------------------- |
-| Application title    | `index.html` `<title>`                 |
-| Meta tags & SEO      | `index.html` `<head>`                  |
-| Theme colours        | `styles.css` `:root` custom properties |
-| Categories           | `script.js` category definitions       |
-| Chart appearance     | `script.js` Chart.js configuration     |
-| Insight rules        | `script.js` Insights Engine            |
-| PIN security logic   | `script.js` Security module            |
-| PDF layout           | `script.js` PDF export functions       |
-| Import validation    | `script.js` Import module              |
-| Service Worker cache | `service-worker.js`                    |
-| Application icon     | `finTrack_icon.png`                    |
-| PWA information      | `manifest.json`                        |
+| What to Change             | Where                                                                                            |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| Application title          | `index.html` `<title>`                                                                           |
+| Meta tags & SEO            | `index.html` `<head>`                                                                            |
+| Theme colours (light/dark) | `styles.css` `:root` and `[data-theme="dark"]` custom properties                                 |
+| Categories & icons         | `script.js`  `CAT`, `CAT_COLORS`, `CAT_COLORS_DARK` objects                                     |
+| Chart appearance           | `script.js`  `renderTrendChart`, `renderCategoryChart`, `renderWeeklyChart`, `getChartDefaults` |
+| Insight rules              | `script.js`  `renderInsights()`                                                                 |
+| PIN security logic         | `script.js`  PIN system block (hashing, lockout, auto-lock)                                     |
+| PDF layout                 | `script.js`  `export-pdf` handler & `generateCustomPDFReport()`                                 |
+| Import validation          | `script.js`  `importFile` change handler & `parseCSVLine()`                                     |
+| Auto-lock durations        | `index.html` `.timer-seg` buttons + `script.js` `initTimerSegments()`                            |
+| Service Worker cache       | `service-worker.js`  `CACHE_NAME`, `APP_SHELL`                                                  |
+| Application icon           | `FinTrack_Icon.png`                                                                              |
+| PWA metadata               | `manifest.json`                                                                                  |
 
 ---
 
 # Deployment
 
-FinTrack is a static Progressive Web Application and can be deployed to any static hosting provider without requiring server-side processing or backend infrastructure.
-
-The live application is currently deployed on **Netlify** and is accessible at:
+FinTrack is a static PWA and can be deployed to any static hosting provider  no server-side processing required.
 
 **Live Application:** https://fintrack-ar.netlify.app
-
-The complete source code is available on GitHub:
-
 **Repository:** https://github.com/ayush-rathour/fintrack
-
----
 
 ## Deploying to Netlify
 
 1. Push the project to GitHub, GitLab, or Bitbucket.
-2. Create a new site on Netlify.
-3. Connect your repository.
-4. Leave the **Build Command** empty.
-5. Set the **Publish Directory** to the project root (`.`).
-6. Deploy the site.
-
-Since FinTrack is built entirely with static web technologies, no compilation or build process is required.
-
----
+2. Create a new site on Netlify and connect the repository.
+3. Leave the **Build Command** empty.
+4. Set the **Publish Directory** to the project root (`.`).
+5. Deploy.
 
 ## Deploying to Other Static Hosts
 
-FinTrack is equally compatible with:
-
-- GitHub Pages
-- Cloudflare Pages
-- Vercel
-- Firebase Hosting
-- Surge
-- Render Static Sites
-- Any standard web server capable of serving static files
-
-To ensure proper Progressive Web App functionality, preserve the complete project directory structure and verify that the Service Worker and Web App Manifest are served correctly.
+Equally compatible with GitHub Pages, Cloudflare Pages, Vercel, Firebase Hosting, Surge, Render Static Sites, or any static file server. Preserve the full directory structure so the manifest and service worker resolve correctly.
 
 ---
 
 # Performance & Accessibility
 
-FinTrack has been designed with a strong emphasis on performance, responsiveness, accessibility, and maintainability.
-
 ### Performance
 
-- Lightweight application built entirely with vanilla web technologies.
-- No frontend frameworks or unnecessary runtime dependencies.
-- Offline asset caching powered by a Service Worker.
-- Optimised rendering with efficient DOM updates.
-- Fast startup after initial installation.
-- Responsive layouts using CSS Grid and Flexbox.
-- Minimal network requests after first launch.
-- Hardware-accelerated CSS animations where appropriate.
-
----
+- No frameworks or bundlers  plain HTML/CSS/JS served directly.
+- Service-worker asset caching for fast repeat loads and offline use.
+- Chart.js instances are updated in place (not destroyed/recreated) where possible to avoid flicker and reduce work.
+- Keyed DOM diffing for the transaction list avoids full re-renders on every change.
+- CSS custom properties drive theming so no JS re-styling pass is needed beyond toggling `data-theme`.
 
 ### Accessibility
 
-Accessibility has been considered throughout the application's design and implementation.
-
-Features include:
-
-- Semantic HTML5 document structure.
-- Keyboard-accessible interactive components.
-- Clearly visible focus indicators.
-- Accessible form labels and validation messages.
-- Responsive typography and spacing.
-- Sufficient colour contrast throughout the interface.
-- Mobile-friendly touch targets.
-- Screen-reader-friendly form controls using appropriate HTML semantics.
-
-The objective is to ensure FinTrack remains usable across a wide range of devices and accessibility needs without compromising visual quality.
+- Semantic HTML5 structure with `role`, `aria-modal`, `aria-live`, `aria-selected`, and `aria-expanded` attributes on interactive regions (PIN dialog, tabs, insight cards, toast region).
+- Keyboard support for the PIN pad (digits, Backspace/Delete, Enter) and `focus-visible` outlines on all major interactive controls.
+- Descriptive `aria-label`s on icon-only buttons (theme toggle, keypad delete/submit, search input).
+- Touch targets sized for mobile use, with actions always visible (not hover-only) on small screens.
 
 ---
 
 # Privacy & Security
 
-Privacy is one of FinTrack's core design principles.
+FinTrack does not require user accounts, registration, or internet connectivity to function, and does not use cloud storage, external databases, or analytics services. All transaction data, security settings, and preferences remain exclusively in the browser's `localStorage` on the user's own device.
 
-Unlike many finance applications, FinTrack does not require:
-
-- User accounts
-- Registration
-- Internet connectivity
-- Cloud synchronisation
-- External databases
-- Analytics services
-- Personal information
-
-All financial records remain stored exclusively within the browser's LocalStorage on the user's own device.
-
-FinTrack never transmits transaction data to external servers, ensuring users retain complete ownership and control of their financial information.
-
----
-
-## Data Ownership
-
-Every transaction, report, chart, preference, and security setting belongs entirely to the user.
-
-The application provides flexible import and export capabilities so users can create backups or migrate data whenever required.
-
-No financial information leaves the user's device unless the user explicitly chooses to export it.
+- No transaction data is ever transmitted anywhere  the only network requests are for loading the static app shell and its CDN dependencies (fonts, icons, Chart.js, jsPDF).
+- PIN codes are salted and SHA-256 hashed before storage; the plain PIN is never persisted.
+- Data only leaves the device when the user explicitly exports or shares it.
 
 ---
 
 # Browser Support
 
-FinTrack uses modern browser technologies including:
+FinTrack relies on modern browser features:
 
-- CSS Custom Properties
-- CSS Grid
-- Flexbox
-- Service Workers
-- Progressive Web App APIs
-- LocalStorage
-- ES6 JavaScript
-- Canvas-based Chart.js visualisations
+- CSS Custom Properties, Grid, and Flexbox
+- Service Workers & Web App Manifest
+- `localStorage`
+- ES6+ JavaScript
+- `crypto.subtle` (Web Crypto API) for PIN hashing
+- Canvas-based Chart.js rendering
+- `IntersectionObserver` for scroll-reveal
 
-The application is tested and supported on the latest stable versions of:
-
-- Google Chrome
-- Microsoft Edge
-- Mozilla Firefox
-- Apple Safari
-- Brave
-- Opera
-- Samsung Internet
-
-Older browsers that do not support Progressive Web App features or modern JavaScript APIs may experience reduced functionality.
+Tested on the latest stable releases of Chrome, Edge, Firefox, Safari, Brave, Opera, and Samsung Internet. Older browsers lacking these APIs (particularly Web Crypto and Service Workers) will lose PIN security and offline support respectively.
 
 ---
 
@@ -614,51 +394,41 @@ Older browsers that do not support Progressive Web App features or modern JavaSc
 
 # Roadmap
 
-The following improvements are planned for future releases:
+Planned for future releases:
 
-- Income tracking
-- Complete balance management
-- Monthly budgeting tools
-- Savings goals
-- Financial reports with richer analytics
-- Recurring expense automation
+- Income tracking and full balance management
+- Multiple/named budgets and savings goals
 - Multi-currency support
-- Dark and Light theme options
-- Data synchronisation between devices (optional)
-- Enhanced AI-powered financial insights
+- Recurring-expense automation (auto-logging, not just detection)
+- Richer, exportable analytics reports
+- Optional cross-device data sync
+- Deeper AI-assisted financial insights
 
-These features are intended to expand FinTrack from a dedicated expense tracker into a comprehensive personal finance management application while preserving its privacy-first philosophy.
+These aim to grow FinTrack from a dedicated expense tracker into a fuller personal finance tool while keeping its privacy-first, local-only design.
 
 ---
 
 # Credits & Attributions
 
-FinTrack is built upon several excellent open-source technologies and community projects.
-
 ### Libraries
 
-- **Chart.js** - Interactive financial data visualisation.
-- **jsPDF** - PDF document generation.
-- **jsPDF AutoTable** - Professional transaction tables.
-- **Bootstrap Icons** - Interface icons.
-- **Font Awesome** - Supplemental iconography.
+- **Chart.js**  interactive data visualisation.
+- **jsPDF** & **jsPDF-AutoTable**  client-side PDF report generation.
+- **Font Awesome**  primary iconography throughout the UI.
+- **Bootstrap Icons**  cached as a PWA asset.
+- **Google Fonts (SUSE)**  primary typeface.
 
 ### Inspiration
 
-The application's design philosophy draws inspiration from modern fintech products including:
+Design inspiration drawn from modern fintech products, Notion, and contemporary banking/budgeting dashboards.
 
-- Notion
-- Cleo
-- Google Material Design
-- Contemporary banking and budgeting dashboards
-
-All application logic, interface design, security implementation, analytics engine, visual styling, and documentation have been designed and developed by **Ayush Rathour** unless otherwise stated.
+All application logic, interface design, security implementation, analytics engine, and documentation were designed and developed by **Ayush Rathour** unless otherwise stated.
 
 ---
 
 # Contact
 
-**Ayush Rathour**  
+**Ayush Rathour**
 Frontend Developer · Saharanpur, Uttar Pradesh, India
 
 - **Portfolio:** https://ayushrathour.netlify.app
@@ -666,19 +436,15 @@ Frontend Developer · Saharanpur, Uttar Pradesh, India
 - **GitHub:** https://github.com/ayush-rathour
 - **Email:** ayushrathour.dev@gmail.com
 
-For project collaborations, feature suggestions, bug reports, or general enquiries, please feel free to get in touch through GitHub or via email.
+For collaborations, feature suggestions, or bug reports, please get in touch via GitHub or email.
 
 ---
 
 # License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the **MIT License**. The software is provided **"as is"**, without warranty of any kind.
 
-The MIT License permits anyone to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, provided that the original copyright notice and license text are included in all copies or substantial portions of the software.
-
-The software is provided **"as is"**, without warranty of any kind, express or implied.
-
-> **Please Note:** While the source code is released under the MIT License, the FinTrack name, branding, visual identity, application icons, screenshots, documentation, and original content represent the intellectual property of the author. If you use this project as a template or starting point for your own application, please replace all branding, assets, and project-specific content with your own.
+> **Please Note:** While the source code is MIT-licensed, the FinTrack name, branding, visual identity, icons, and original content remain the intellectual property of the author. If reusing this project as a template, please replace all branding and project-specific content with your own.
 
 ---
 
