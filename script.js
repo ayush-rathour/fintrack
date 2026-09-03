@@ -2282,13 +2282,19 @@ function getFilteredExportData() {
       );
     });
   } else if (period === "last-3-months") {
-    const cutoff = new Date();
-    cutoff.setMonth(now.getMonth() - 3);
+    // Calendar-aligned: from the 1st of the month 2 months back through today
+    // (e.g. run in September -> Jul 1 - Sep 30), not a rolling "last 90 days".
+    const cutoff = new Date(now.getFullYear(), now.getMonth() - 2, 1);
     filtered = filtered.filter((e) => new Date(e.date + "T00:00:00") >= cutoff);
   } else if (period === "this-year") {
     filtered = filtered.filter((e) => {
       const d = new Date(e.date + "T00:00:00");
       return d.getFullYear() === now.getFullYear();
+    });
+  } else if (period === "last-year") {
+    filtered = filtered.filter((e) => {
+      const d = new Date(e.date + "T00:00:00");
+      return d.getFullYear() === now.getFullYear() - 1;
     });
   } else if (period === "custom") {
     const start = exportStartDate.value;
