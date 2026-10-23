@@ -11,7 +11,7 @@
 > **FinTrack** is a modern, offline-first personal expense tracker built with semantic HTML5, hand-written CSS3, and vanilla JavaScript (ES6+). Packaged as an installable Progressive Web App, it lets users record, search, filter, analyse, and export everyday spending  with all data kept entirely on-device in `localStorage`. No accounts, no backend, no network calls beyond loading static assets and CDN libraries.
 
 **Live Application:** https://fintrack-ar.netlify.app
-**Installable APK:** https://ayushrathour.netlify.app/files/FinTrack_v17.apk
+**Installable APK:** https://ayushrathour.pages.dev/files/FinTrack_v17.apk
 
 > **Note:** FinTrack currently focuses on expense tracking only. Income tracking and full balance management are not yet implemented (see Roadmap).
 
@@ -222,7 +222,7 @@ FinTrack ships a `manifest.json` and a `service-worker.js`, making it installabl
 ├── script.js             # Core application logic (state, rendering, charts, PDF, PIN, PWA hook-in)
 ├── manifest.json         # Web App Manifest (PWA metadata, icons, shortcuts)
 ├── service-worker.js     # Offline caching & asset management
-├── FinTrack_Icon.png     # Application icon / favicon / screenshot
+├── fintrack_icon.png     # Application icon / favicon / screenshot
 ├── LICENSE
 └── README.md
 ```
@@ -268,7 +268,7 @@ Ensure the following are present in the project root:
 - `script.js`
 - `manifest.json`
 - `service-worker.js`
-- `FinTrack_Icon.png`
+- `fintrack_icon.png`
 
 ### 3. Start a Local Server (Recommended)
 
@@ -307,7 +307,7 @@ Visit `http://localhost:8000` in your browser. The service worker registers auto
 | Import validation          | `script.js`  `importFile` change handler & `parseCSVLine()`                                     |
 | Auto-lock durations        | `index.html` `.timer-seg` buttons + `script.js` `initTimerSegments()`                            |
 | Service Worker cache       | `service-worker.js`  `CACHE_NAME`, `APP_SHELL`                                                  |
-| Application icon           | `FinTrack_Icon.png`                                                                              |
+| Application icon           | `fintrack_icon.png`                                                                              |
 | PWA metadata               | `manifest.json`                                                                                  |
 
 ---
@@ -431,7 +431,7 @@ All application logic, interface design, security implementation, analytics engi
 **Ayush Rathour**
 Frontend Developer · Saharanpur, Uttar Pradesh, India
 
-- **Portfolio:** https://ayushrathour.netlify.app
+- **Portfolio:** https://ayushrathour.pages.dev
 - **Live Application:** https://fintrack-ar.netlify.app
 - **GitHub:** https://github.com/ayush-rathour
 - **Email:** ayushrathour.dev@gmail.com

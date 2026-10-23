@@ -14,7 +14,7 @@
   "prefer_related_applications": false,
   "screenshots": [
     {
-      "src": "/FinTrack_Icon.png",
+      "src": "/fintrack_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "label": "FinTrack Home Screen"
@@ -22,19 +22,19 @@
   ],
   "icons": [
     {
-      "src": "/FinTrack_Icon.png",
+      "src": "/fintrack_icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/FinTrack_Icon.png",
+      "src": "/fintrack_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/FinTrack_Icon.png",
+      "src": "/fintrack_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -46,14 +46,14 @@
       "short_name": "Add",
       "description": "Quickly record an expense",
       "url": "/index.html?action=add-expense",
-      "icons": [{ "src": "/FinTrack_Icon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/fintrack_icon.png", "sizes": "96x96" }]
     },
     {
       "name": "View Insights",
       "short_name": "Insights",
       "description": "See your spending insights",
       "url": "/index.html?action=insights",
-      "icons": [{ "src": "/FinTrack_Icon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/fintrack_icon.png", "sizes": "96x96" }]
     }
   ]
 }

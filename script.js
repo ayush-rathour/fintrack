@@ -2215,7 +2215,7 @@ document.getElementById("export-pdf").addEventListener("click", () => {
         align: "center",
       });
       doc.setTextColor(...BLUE).textWithLink("AR.dev", pw - mr, ph - 14, {
-        url: "https://ayushrathour.netlify.app",
+        url: "https://ayushrathour.pages.dev",
         align: "right",
       });
     }
@@ -2551,7 +2551,7 @@ function generateCustomPDFReport(dataset) {
       doc
         .setTextColor(...BLUE)
         .textWithLink("AR.dev", pw - mr, ph - 14, {
-          url: "https://ayushrathour.netlify.app",
+          url: "https://ayushrathour.pages.dev",
           align: "right",
         });
     }

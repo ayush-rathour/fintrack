@@ -6,7 +6,7 @@ const APP_SHELL = [
   "/styles.css",
   "/script.js",
   "/manifest.json",
-  "/FinTrack_Icon.png",
+  "/fintrack_icon.png",
   "https://cdn.jsdelivr.net/npm/chart.js",
   "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css",
   "https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap",
