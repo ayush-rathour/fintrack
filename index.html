@@ -3,10 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-Q1SS7DRZ5G"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-Q1SS7DRZ5G");
+    </script>
     <title>FinTrack | Expense Tracker</title>
     <meta
       name="description"
-      content="FinTrack is a free, offline-first expense tracker PWA. Record expenses, analyze spending habits, and get smart insights - no login, no server, 100% private."
+      content="FinTrack is a free, offline-first expense tracker PWA. Record expenses, analyze spending habits, and get smart insights - no login, and your expense data stays on your device."
     />
     <meta name="author" content="Ayush Rathour - AR.dev" />
     <meta name="robots" content="index, follow" />
@@ -15,7 +28,7 @@
     <meta property="og:title" content="FinTrack - Free Expense Tracker PWA" />
     <meta
       property="og:description"
-      content="Track your expenses offline. Smart insights, PIN lock, PDF export, and beautiful charts. No login required. 100% private."
+      content="Track your expenses offline. Smart insights, PIN lock, PDF export, and beautiful charts. No login required. Your expense data stays on your device."
     />
     <meta
       property="og:image"
@@ -846,7 +859,9 @@
                     FinTrack is a smart, privacy-first expense tracker that
                     lives entirely on your device. No accounts, no cloud sync,
                     no ads - just a clean, fast tool to stay on top of your
-                    spending, every single day.
+                    spending, every single day. Your expense data never leaves
+                    your device; only anonymous usage statistics are collected
+                    through Google Analytics.
                   </p>
 
                   <div class="about-features">
@@ -904,7 +919,7 @@
                       >
                         <i class="fa-solid fa-lock"></i>
                       </div>
-                      <span class="about-feat-text">100% Private</span>
+                      <span class="about-feat-text">Data Stays Local</span>
                     </div>
                   </div>
 

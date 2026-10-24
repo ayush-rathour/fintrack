@@ -1,4 +1,4 @@
-const CACHE_NAME = "fintrack-expense-v17.7";
+const CACHE_NAME = "fintrack-expense-v17.8";
 
 const APP_SHELL = [
   "/",
@@ -32,6 +32,13 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  const host = new URL(e.request.url).hostname;
+  if (
+    host.endsWith("googletagmanager.com") ||
+    host.endsWith("google-analytics.com") ||
+    host.endsWith("analytics.google.com")
+  )
+    return; // let analytics requests go straight to the network
   if (e.request.mode === "navigate") {
     e.respondWith(fetch(e.request).catch(() => caches.match("/index.html")));
     return;
